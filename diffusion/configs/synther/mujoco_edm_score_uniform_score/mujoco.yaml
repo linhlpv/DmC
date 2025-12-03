@@ -1,0 +1,51 @@
+defaults:
+  - _self_
+  - task: halfcheetah-medium-expert-v2
+
+pipeline_name: synther_d4rl_mujoco_edm
+mode: inference
+seed: 0
+device: cuda:0
+tar_dir: <path-to-dataset>/dataset/datasets
+tar_env_name: halfcheetah_gravity_0.5_expert
+
+# Environment
+normalize_reward: True
+
+# SynthER
+solver: euler
+diffusion_steps: 128
+sampling_steps: 128
+predict_noise: True
+ema_rate: 0.999
+diffusion_learning_rate: 0.0003
+
+# Diffusion Training
+diffusion_gradient_steps: 100000
+# batch_size: 256 # for medium-replay as in original implementation of synther
+batch_size: 1024 # for otherwise
+log_interval: 1000
+save_interval: 100000
+# save_interval: 5000
+
+
+# RL Training
+rl_gradient_steps: 1000000
+
+# Inference
+ckpt: latest
+num_envs: 50
+num_episodes: 3
+use_ema: True
+
+# hydra
+hydra:
+  job:
+    chdir: false
+
+## score type
+score_type: w_shifted_log_sas_ratio # could be w_shifted_log_sas_ratio, max_min_normalize_score, w_max_min_normalize_score
+score_dir: <path-to-folder>/score_sas/4 # specify the folder where the scores are stored
+cond_score: 90
+sub_folder: results/uniform_score/cond_only_sas/knn_4 # specify the sub-folder to save results
+load_size: 100000
